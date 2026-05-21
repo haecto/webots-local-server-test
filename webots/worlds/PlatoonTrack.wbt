@@ -2,11 +2,11 @@
 
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
-EXTERNPROTO "../../protos/Zumo32U4.proto"
-EXTERNPROTO "../../protos/ZumoComSystem.proto"
-EXTERNPROTO "../../protos/PlatoonTrack.proto"
-EXTERNPROTO "../../protos/Supervisor.proto"
-EXTERNPROTO "../../protos/Obstacle.proto"
+EXTERNPROTO "../protos/Zumo32U4.proto"
+EXTERNPROTO "../protos/ZumoComSystem.proto"
+EXTERNPROTO "../protos/PlatoonTrack.proto"
+EXTERNPROTO "../protos/Supervisor.proto"
+EXTERNPROTO "../protos/Obstacle.proto"
 
 WorldInfo {
   info [
