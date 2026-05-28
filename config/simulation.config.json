@@ -1,0 +1,8 @@
+{
+  "webotsHome": "/home/cyberbotics/webots",
+  "port": 2000,
+  "logDir": "log/",
+  "server": "localhost",
+  "docker": true,
+  "debug": true
+}
