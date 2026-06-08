@@ -4,21 +4,16 @@ services:
       context: .
       dockerfile_inline: |
         FROM ubuntu:22.04
+        ENV DEBIAN_FRONTEND=noninteractive
 
         RUN apt-get update && apt-get install -y \
           python3.10 \
           python3.10-venv \
           python3-pip \
           git \
-          subversion \
           curl \
           docker.io \
-          docker-compose \
-          xvfb \
-          libxcb-cursor0 \
           && rm -rf /var/lib/apt/lists/*
-        
-
 
         WORKDIR /webots-server
 
@@ -28,19 +23,11 @@ services:
           /webots-server/.venv/bin/pip install \
             nvidia-ml-py3 requests psutil tornado distro websockets
 
-        # Patch: Convert GitHub Git URLs to HTTPS (SSH keys not needed)
         RUN sed -i "s|https://git@github.com/|https://github.com/|g" simulation_server.py
-
-        # Docker Socket Wrapper (for docker-compose compatibility)
-        RUN echo '#!/bin/bash' > /usr/local/bin/docker && \
-            echo 'if [ "$1" = "compose" ]; then shift; exec docker-compose "$@"; fi' >> /usr/local/bin/docker && \
-            echo 'exec /usr/bin/docker "$@"' >> /usr/local/bin/docker && \
-            chmod +x /usr/local/bin/docker
 
         EXPOSE 2000
 
-        ENTRYPOINT []
-        CMD ["bash", "-c", "source /webots-server/.venv/bin/activate && python3 /webots-server/simulation_server.py /config/simulation/config.json"]
+        CMD ["bash", "-c", "source /webots-server/.venv/bin/activate && python3 /webots-server/simulation_server.py /config/simulation.json"]
 
     runtime: nvidia
 
@@ -56,26 +43,18 @@ services:
       - "2000:2000"
 
     volumes:
-      # Docker Socket for starting Webots containers
       - /var/run/docker.sock:/var/run/docker.sock
-      # Projects (GitHub Checkouts)
       - webots_projects:/projects
-      # Server Logs
       - webots_logs:/logs
-      # Configuration Files (Read-Only)
-      - ./config/simulation.config.json:/config/simulation/config.json:ro
+      - ./config/simulation.json:/config/simulation.json:ro
 
     environment:
       - DEBUG=${DEBUG:-false}
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
-      # Webots headless/web mode for Docker containers
       - DISPLAY=
       - QT_QPA_PLATFORM=offscreen
       - WEBOTS_HOME=/usr/local/webots
-
-    networks:
-      - webots-net
 
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:2000/load"]
@@ -84,66 +63,8 @@ services:
       retries: 3
       start_period: 30s
 
-  session-server:
-    build:
-      context: .
-      dockerfile_inline: |
-        FROM ubuntu:22.04
-
-        RUN apt-get update && apt-get install -y \
-          python3.10 \
-          python3.10-venv \
-          python3-pip \
-          git \
-          curl \
-          && rm -rf /var/lib/apt/lists/*
-
-        WORKDIR /webots-server
-
-        RUN git clone https://github.com/cyberbotics/webots-server.git . && \
-          python3 -m venv /webots-server/.venv && \
-          /webots-server/.venv/bin/pip install --upgrade pip && \
-          /webots-server/.venv/bin/pip install \
-            requests psutil tornado distro websockets
-
-        # Patch: Convert GitHub Git URLs to HTTPS (SSH keys not needed)
-        RUN sed -i "s|https://git@github.com/|https://github.com/|g" session_server.py
-
-        EXPOSE 1999
-
-        ENTRYPOINT []
-        CMD ["bash", "-c", "echo 'simulation-server localhost' >> /etc/hosts && source /webots-server/.venv/bin/activate && python3 /webots-server/session_server.py /config/session/config.json"]
-
-    ports:
-      - "1999:1999"
-
-    volumes:
-      - webots_logs:/logs
-      - ./config/session.config.json:/config/session/config.json:ro
-
-    environment:
-      - DEBUG=${DEBUG:-false}
-
-    networks:
-      - webots-net
-
-    depends_on:
-      simulation-server:
-        condition: service_healthy
-
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:1999/monitor"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
-
 volumes:
   webots_projects:
     driver: local
   webots_logs:
     driver: local
-
-networks:
-  webots-net:
-    driver: bridge

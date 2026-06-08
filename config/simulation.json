@@ -1,0 +1,16 @@
+{
+  "port": 2000,
+  "server": "localhost",
+  "ssl": false,
+  "portRewrite": false,
+  "docker": true,
+  "webotsHome": "/usr/local/webots",
+  "allowedRepositories": [
+    "github.com/cyberbotics/webots",
+    "github.com/haecto/Webots_Test_World"
+  ],
+  "maxConnections": 5,
+  "logDir": "/logs/",
+  "timeout": 7200,
+  "debug": true
+}
