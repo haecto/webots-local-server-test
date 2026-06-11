@@ -1,0 +1,11 @@
+1781168250: mosquitto version 2.0.22 starting
+1781168250: Config loaded from /mosquitto/config/mosquitto.conf.
+1781168250: Warning: File /mosquitto/config/password_file has world readable permissions. Future versions will refuse to load this file.
+To fix this, use `chmod 0700 /mosquitto/config/password_file`.
+1781168250: Warning: File /mosquitto/config/acl_file has world readable permissions. Future versions will refuse to load this file.
+To fix this, use `chmod 0700 /mosquitto/config/acl_file`.
+1781168250: Opening ipv4 listen socket on port 1883.
+1781168250: Opening ipv6 listen socket on port 1883.
+1781168250: mosquitto version 2.0.22 running
+1781168366: mosquitto version 2.0.22 terminating
+1781168366: Saving in-memory database to /mosquitto/data/mosquitto.db.
