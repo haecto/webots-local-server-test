@@ -16,8 +16,8 @@ WORKDIR /webots-server
 RUN git clone https://github.com/cyberbotics/webots-server.git . && \
   pip3 install pynvml requests psutil tornado distro websockets && \
   sed -i "s|https://git@github.com/|https://github.com/|g" simulation_server.py && \
-  sed -i '/^#$/a RUN apt-get update \&\& apt-get install -y mosquitto-clients \&\& rm -rf /var/lib/apt/lists/*' \
-  /webots-server/config/simulation/docker/Dockerfile.default && \
+  echo 'RUN apt-get update && apt-get install -y mosquitto-clients && rm -rf /var/lib/apt/lists/*' \
+  >> /webots-server/config/simulation/docker/Dockerfile.default && \
   printf '\nnetworks:\n  default:\n    external: true\n    name: webots-local-server-test_default\n' \
   >> /webots-server/config/simulation/docker/docker-compose-default.yml
 EXPOSE 2000
